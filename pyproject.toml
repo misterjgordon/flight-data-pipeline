@@ -1,0 +1,27 @@
+[project]
+name = "databricks"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "pyright",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "Q", "D"]
+ignore = ["D100", "D101", "D102", "D103", "D104", "D105"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.pyright]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"

@@ -1,0 +1,59 @@
+---
+alwaysApply: true
+---
+# Databricks Rules
+
+## Notebooks
+- Databricks notebooks are stored as source files with `# COMMAND ----------` cell delimiters.
+- Keep cell responsibilities narrow: one cell = one logical step (ingest, transform, validate, output).
+- Use `%md` magic cells for section headers and documentation within notebooks.
+- Avoid side effects in shared/imported modules — notebooks may be run in any order.
+
+## Delta Lake & Tables
+- Always use Delta format for tables unless there is an explicit reason not to.
+- Use fully-qualified three-part names: `catalog.schema.table`.
+- Prefer `MERGE INTO` over `INSERT OVERWRITE` when upserting to avoid full rewrites.
+- Add `OPTIMIZE` and `ZORDER BY` hints only on frequently queried/filtered columns.
+- Use `spark.table('catalog.schema.table')` over raw SQL string queries in Python code.
+
+## PySpark
+- Prefer Spark-native DataFrame operations over UDFs; UDFs break predicate pushdown.
+- Use `F.<function>` import style: `from pyspark.sql import functions as F`.
+- Avoid calling `.count()`, `.show()`, or `.toPandas()` in production pipelines — these are expensive actions.
+- Cache (`df.cache()`) only when a DataFrame is used more than once in the same job.
+- Use `.printSchema()` or explicit `StructType` definitions to document expected schemas.
+
+## Pipelines (DLT / Workflows)
+- Delta Live Tables (DLT) pipeline files live in `pipelines/`.
+- Decorate streaming tables with `@dlt.table`, materialized views with `@dlt.view`.
+- Keep pipeline logic pure: no side effects, no writes to external systems inside DLT functions.
+- Workflow job definitions (JSON/YAML) live in `workflows/` and are version-controlled.
+
+## Secrets & Config
+- NEVER hard-code credentials, tokens, or connection strings.
+- Use Databricks Secrets (`dbutils.secrets.get(scope, key)`) for sensitive values.
+- Non-sensitive cluster/job config goes in `config/` as YAML.
+
+## Unity Catalog
+- Grant permissions at the schema level, not the table level, unless a specific table needs tighter control.
+- Use `COMMENT ON TABLE / COLUMN` to document tables in the catalog.
+
+## Testing
+- Unit-testable logic (transformations, helpers) lives in `src/` as plain Python modules.
+- Integration tests that require a live cluster belong in `tests/integration/` and are skipped locally.
+- Prefer `pytest` with `pyspark.sql.SparkSession` local mode for unit tests.
+
+## File / Folder Layout
+```
+databricks/
+├── notebooks/        # exploratory & ad-hoc notebooks
+├── pipelines/        # DLT pipeline definitions
+├── workflows/        # Databricks Workflow job JSON/YAML
+├── src/              # importable Python modules (no notebook magic)
+│   └── <domain>/
+├── tests/
+│   ├── unit/
+│   └── integration/
+├── config/           # non-secret config (YAML)
+└── scripts/          # local CLI helpers
+```

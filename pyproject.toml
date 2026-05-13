@@ -2,7 +2,10 @@
 name = "databricks"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "ipykernel>=7.2.0",
+    "pyspark>=4.1.1",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -25,3 +28,5 @@ convention = "numpy"
 [tool.pyright]
 pythonVersion = "3.11"
 typeCheckingMode = "standard"
+venvPath = "."
+venv = ".venv"

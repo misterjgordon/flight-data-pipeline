@@ -1,0 +1,26 @@
+resources:
+  pipelines:
+    flight_data_pipeline:
+      name: Flight Data Pipeline
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      photon: true
+      channel: CURRENT
+      continuous: false
+      libraries:
+        - file:
+            path: ../pipelines/transformations/ingest_flights.py
+        - file:
+            path: ../pipelines/transformations/flights_cleaned.py
+        - file:
+            path: ../pipelines/transformations/flight_origin.py
+        - file:
+            path: ../pipelines/transformations/flight_stats.py
+        - file:
+            path: ../pipelines/transformations/flights_map.py
+        - file:
+            path: ../pipelines/transformations/top_countries.py
+      environment:
+        dependencies:
+          - pyspark-data-sources

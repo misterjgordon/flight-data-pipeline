@@ -1,0 +1,52 @@
+bundle:
+  name: flight-data-pipeline
+
+include:
+  - resources/*.yml
+
+sync:
+  exclude:
+    - resources/
+    - tests/
+    - scripts/
+    - config/
+    - .cursor/
+    - .venv/
+    - .env
+    - README.md
+    - Makefile
+    - pyproject.toml
+    - uv.lock
+
+variables:
+  catalog:
+    description: Unity Catalog catalog name
+    default: main
+  schema:
+    description: Unity Catalog schema name
+    default: default
+  warehouse_id:
+    description: SQL warehouse ID for queries (find in Databricks > SQL Warehouses)
+    default: ''
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://dbc-08214e28-2988.cloud.databricks.com
+      profile: DEFAULT
+      root_path: ~/flight-data-pipeline/dev
+    variables:
+      catalog: workspace
+      schema: default
+
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-08214e28-2988.cloud.databricks.com
+      profile: DEFAULT
+      root_path: /Workspace/Shared/flight-data-pipeline/prod
+    variables:
+      catalog: main
+      schema: default

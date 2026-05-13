@@ -21,10 +21,12 @@ env/
 .env
 .env.*
 !.env.example
+.streamlit/secrets.toml
 
 # Databricks
 .databricks/
 *.dbc
+**/sync-snapshots/
 
 # IDE
 .vscode/extensions.json

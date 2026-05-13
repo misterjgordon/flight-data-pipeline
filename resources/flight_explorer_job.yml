@@ -1,0 +1,14 @@
+resources:
+  jobs:
+    flight_explorer_job:
+      name: Flight Data Pipeline — Explorer
+      tasks:
+        - task_key: explore
+          notebook_task:
+            notebook_path: ../notebooks/flight_data_pipeline_explorer.py
+            source: WORKSPACE
+          environment_key: default
+      environments:
+        - environment_key: default
+          spec:
+            client: '1'

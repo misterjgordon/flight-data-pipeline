@@ -1,0 +1,13 @@
+resources:
+  apps:
+    flight_map_app:
+      name: flight-map
+      description: Live 3D flight tracker — interactive pydeck map and top-countries bar chart.
+      source_code_path: ../apps/flight_map
+
+      resources:
+        - name: flights-map-warehouse
+          description: SQL warehouse used to query flights_map and top_countries gold tables.
+          sql_warehouse:
+            id: a25aa5dc2aa67f12
+            permission: CAN_USE

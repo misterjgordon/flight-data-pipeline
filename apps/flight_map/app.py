@@ -31,6 +31,12 @@ def get_client() -> WorkspaceClient:
     token = os.environ.get('STREAMLIT_CLOUD_READONLY_TOKEN')
     if host and token:
         return WorkspaceClient(host=host, token=token)
+    if not token and host:
+        st.error(
+            'Missing secret: `STREAMLIT_CLOUD_READONLY_TOKEN` is not set. '
+            'Add it in the Streamlit Cloud app settings under Secrets.'
+        )
+        st.stop()
     return WorkspaceClient()
 
 

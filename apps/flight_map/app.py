@@ -1,4 +1,5 @@
 import os
+import time
 
 import pandas as pd
 import plotly.express as px
@@ -44,14 +45,26 @@ WAREHOUSE_ID = os.environ.get('DATABRICKS_WAREHOUSE_ID', 'a25aa5dc2aa67f12')
 
 
 def _query(statement: str) -> pd.DataFrame:
+    """Execute a SQL statement, polling until completion.
+
+    Uses the maximum wait_timeout (50s). If the statement is still running
+    after that (can happen on first warehouse query after idle), polls once
+    more before raising.
+    """
     w = get_client()
     response = w.statement_execution.execute_statement(
         warehouse_id=WAREHOUSE_ID,
         statement=statement,
         disposition=Disposition.INLINE,
         format=Format.JSON_ARRAY,
-        wait_timeout='30s',
+        wait_timeout='50s',
     )
+
+    # Poll once more if the warehouse needed extra time to compile the query
+    if response.status.state not in (StatementState.SUCCEEDED, StatementState.FAILED):
+        time.sleep(5)
+        response = w.statement_execution.get_statement(response.statement_id)
+
     if response.status.state != StatementState.SUCCEEDED:
         raise RuntimeError(f'Query failed: {response.status.error}')
 
@@ -64,7 +77,12 @@ def _query(statement: str) -> pd.DataFrame:
 
 @st.cache_data(ttl=900)   # 15 minutes — matches pipeline schedule
 def load_flights() -> pd.DataFrame:
-    df = _query('SELECT * FROM workspace.default.flights_map')
+    df = _query('''
+        SELECT icao24, callsign, origin_country, latitude, longitude,
+               altitude_ft, velocity_kts, heading, emitter_category,
+               vertical_rate_fpm, aircraft_count
+        FROM workspace.default.flights_map
+    ''')
     for col in ('altitude_ft', 'velocity_kts', 'aircraft_count'):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')

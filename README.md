@@ -28,29 +28,35 @@ A production-grade, end-to-end data engineering pipeline on Databricks — real-
 
 ## Architecture
 
-```
-OpenSky Network API
-        │
-        ▼
-┌───────────────────────────────────────────────────┐
-│              Lakeflow Declarative Pipeline         │
-│                                                   │
-│  ingest_flights (streaming table)                 │
-│        │                                          │
-│        ▼                                          │
-│  flights_cleaned (materialised view)              │
-│        │                                          │
-│        ├──► flights_map   (gold — map coords)     │
-│        ├──► top_countries (gold — leaderboard)    │
-│        ├──► flight_origin (gold — % by country)   │
-│        └──► flight_stats  (gold — aggregates)     │
-└───────────────────────────────────────────────────┘
-        │
-        ▼
- Unity Catalog (workspace.default.*)
-        │
-        ├──► Streamlit App (Databricks Apps — authenticated)
-        └──► Streamlit App (https://flight-map-live.streamlit.app — public)
+```mermaid
+flowchart TD
+    OpenSky["OpenSky Network API\n(live ADS-B feed)"]
+
+    subgraph pipeline ["Lakeflow Declarative Pipeline"]
+        ingest["ingest_flights\nStreaming table"]
+        cleaned["flights_cleaned\nMaterialised view — incremental"]
+        map["flights_map\nGold — map coordinates"]
+        top["top_countries\nGold — leaderboard"]
+        origin["flight_origin\nGold — % by country"]
+        stats["flights_stats\nGold — aggregates"]
+
+        ingest --> cleaned
+        cleaned --> map
+        cleaned --> top
+        cleaned --> origin
+        cleaned --> stats
+    end
+
+    subgraph catalog ["Unity Catalog (workspace.default.*)"]
+        uc["Delta tables"]
+    end
+
+    map & top & origin & stats --> uc
+
+    uc --> app1["Databricks Apps\n(authenticated)"]
+    uc --> app2["Streamlit Community Cloud\nflight-map-live.streamlit.app"]
+
+    OpenSky --> ingest
 ```
 
 ---

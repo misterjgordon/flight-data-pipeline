@@ -10,7 +10,7 @@ A production-grade, end-to-end data engineering pipeline on Databricks — real-
 
 ![Lakeflow Declarative Pipeline DAG — completed run showing ingest_flights (streaming table, 7.4K records) → flights_cleaned (materialised view, 15K records, incremental) → top_countries, flights_stats, flight_origin, flights_map (all gold materialised views, green)](docs/screenshots/pipeline-dag.png)
 
-*Live pipeline run in Databricks — streaming ingestion from OpenSky Network through incremental cleaning to four gold materialised views, all completing in under 15 seconds.*
+*Live pipeline run in Databricks — raw ADS-B data flows from a bronze streaming table through a silver cleaning layer to four gold materialised views powering the flight tracker app.*
 
 ---
 
@@ -30,33 +30,26 @@ A production-grade, end-to-end data engineering pipeline on Databricks — real-
 
 ```mermaid
 flowchart TD
-    OpenSky["OpenSky Network API\n(live ADS-B feed)"]
+    OpenSky["OpenSky Network API — live ADS-B feed"]
 
-    subgraph pipeline ["Lakeflow Declarative Pipeline"]
-        ingest["ingest_flights\nStreaming table"]
-        cleaned["flights_cleaned\nMaterialised view — incremental"]
-        map["flights_map\nGold — map coordinates"]
-        top["top_countries\nGold — leaderboard"]
-        origin["flight_origin\nGold — % by country"]
-        stats["flights_stats\nGold — aggregates"]
+    ingest["ingest_flights\nBronze · Streaming table"]
+    cleaned["flights_cleaned\nSilver · Materialised view, incremental"]
 
-        ingest --> cleaned
-        cleaned --> map
-        cleaned --> top
-        cleaned --> origin
-        cleaned --> stats
-    end
+    map["flights_map\nGold · Map coordinates"]
+    top["top_countries\nGold · Leaderboard"]
+    origin["flight_origin\nGold · % by country"]
+    stats["flights_stats\nGold · Aggregates"]
 
-    subgraph catalog ["Unity Catalog (workspace.default.*)"]
-        uc["Delta tables"]
-    end
+    uc["Unity Catalog — workspace.default.*"]
 
-    map & top & origin & stats --> uc
-
-    uc --> app1["Databricks Apps\n(authenticated)"]
-    uc --> app2["Streamlit Community Cloud\nflight-map-live.streamlit.app"]
+    app1["Databricks Apps\nauthenticated"]
+    app2["Streamlit Community Cloud\nflight-map-live.streamlit.app"]
 
     OpenSky --> ingest
+    ingest --> cleaned
+    cleaned --> map & top & origin & stats
+    map & top & origin & stats --> uc
+    uc --> app1 & app2
 ```
 
 ---

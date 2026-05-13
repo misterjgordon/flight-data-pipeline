@@ -2,7 +2,7 @@
 
 A production-grade, end-to-end data engineering pipeline on Databricks — real-time global flight tracking from ingestion to interactive visualisation.
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://misterjgordon-flight-data-pipeline.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://flight-map-live.streamlit.app)
 
 ---
 
@@ -42,7 +42,7 @@ OpenSky Network API
  Unity Catalog (workspace.default.*)
         │
         ├──► Streamlit App (Databricks Apps — authenticated)
-        └──► Streamlit App (Streamlit Community Cloud — public)
+        └──► Streamlit App (https://flight-map-live.streamlit.app — public)
 ```
 
 ---

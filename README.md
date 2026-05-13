@@ -6,6 +6,14 @@ A production-grade, end-to-end data engineering pipeline on Databricks — real-
 
 ---
 
+## Pipeline in action
+
+![Lakeflow Declarative Pipeline DAG — completed run showing ingest_flights (streaming table, 7.4K records) → flights_cleaned (materialised view, 15K records, incremental) → top_countries, flights_stats, flight_origin, flights_map (all gold materialised views, green)](docs/screenshots/pipeline-dag.png)
+
+*Live pipeline run in Databricks — streaming ingestion from OpenSky Network through incremental cleaning to four gold materialised views, all completing in under 15 seconds.*
+
+---
+
 ## What this demonstrates
 
 - **Real-time ingestion** — live ADS-B state vectors from the [OpenSky Network](https://opensky-network.org/) REST API

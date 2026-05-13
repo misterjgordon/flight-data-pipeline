@@ -85,7 +85,15 @@ databricks/
 │   ├── flight_explorer_job.yml
 │   └── flight_map_app.yml
 ├── src/                       # Shared Python modules (importable)
-├── tests/                     # Unit tests
+├── tests/
+│   ├── unit/                  # Local unit tests (no cluster required)
+│   └── integration/           # Integration tests (require live cluster)
+├── docs/
+│   └── screenshots/           # Workspace screenshots for README
+├── scripts/                   # Local CLI helpers
+├── .env.example               # Required environment variables (template)
+├── .streamlit/
+│   └── secrets.toml.example   # Streamlit Cloud secrets template
 ├── databricks.yml             # Bundle root — targets dev + prod
 └── Makefile                   # Developer workflow shortcuts
 ```

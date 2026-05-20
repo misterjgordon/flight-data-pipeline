@@ -14,13 +14,36 @@ dev = [
     "pyright",
 ]
 
+[tool.pytest.ini_options]
+pythonpath = ["pipelines/transformations"]
+testpaths = ["tests"]
+addopts = "-rs --tb=short"
+markers = [
+    "contract: file-based checks; no JVM or Spark",
+    "spark: PySpark transform tests; skipped if the local JVM will not start",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
 
+[tool.ruff.format]
+quote-style = "single"
+
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "Q", "D"]
 ignore = ["D100", "D101", "D102", "D103", "D104", "D105"]
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+docstring-quotes = "double"
+
+[tool.ruff.lint.per-file-ignores]
+"pipelines/**/*.py" = ["F821"]
+"notebooks/**/*.py" = ["E402", "F821", "Q000"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["flight_row_transforms"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
@@ -30,3 +53,21 @@ pythonVersion = "3.11"
 typeCheckingMode = "standard"
 venvPath = "."
 venv = ".venv"
+
+[[tool.pyright.executionEnvironments]]
+# Lakeflow injects ``spark`` at runtime for transformation modules.
+root = "pipelines/transformations"
+reportUndefinedVariable = false
+reportMissingImports = false
+reportPrivateImportUsage = false
+
+[[tool.pyright.executionEnvironments]]
+# Databricks notebooks: ``spark``, ``display``, and cell-scoped imports.
+root = "notebooks"
+reportMissingImports = false
+reportPrivateImportUsage = false
+reportUndefinedVariable = false
+
+[[tool.pyright.executionEnvironments]]
+root = "tests"
+extraPaths = ["pipelines/transformations"]

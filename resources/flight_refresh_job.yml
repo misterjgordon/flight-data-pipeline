@@ -10,4 +10,5 @@ resources:
         - task_key: refresh_pipeline
           pipeline_task:
             pipeline_id: ${resources.pipelines.flight_data_pipeline.id}
+            # Scheduled runs stay incremental. One-off full refresh: UI or `make pipeline-full-refresh-dev`.
             full_refresh: false

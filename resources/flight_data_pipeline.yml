@@ -10,9 +10,11 @@ resources:
       continuous: false
       libraries:
         - file:
+            path: ../pipelines/transformations/flight_row_transforms.py
+        - file:
             path: ../pipelines/transformations/ingest_flights.py
         - file:
-            path: ../pipelines/transformations/flights_cleaned.py
+            path: ../pipelines/transformations/flights_current.py
         - file:
             path: ../pipelines/transformations/flight_origin.py
         - file:

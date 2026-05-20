@@ -8,8 +8,9 @@
 # MAGIC **Tables covered**
 # MAGIC | Table | Type | Description |
 # MAGIC |---|---|---|
-# MAGIC | `workspace.default.ingest_flights` | Streaming table | Raw ADS-B state vectors from OpenSky |
-# MAGIC | `workspace.default.flight_origin` | Materialized view | % of flights per country of origin |
+# MAGIC | `workspace.default.ingest_flights` | Streaming table | OpenSky microbatches (append per run) |
+# MAGIC | `workspace.default.flights_current` | Materialized view | Latest batch only, cleaned for gold |
+# MAGIC | `workspace.default.flight_origin` | Materialized view | % of flights by origin country |
 # MAGIC | `workspace.default.flights_stats` | Table | Aggregate velocity and aircraft counts |
 
 # COMMAND ----------

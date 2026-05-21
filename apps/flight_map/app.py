@@ -20,6 +20,233 @@ st.set_page_config(
     layout='wide',
 )
 
+ACCENT = '#6C5CE7'
+ACCENT_DIM = '#5a4bc4'
+
+
+def inject_radison_theme() -> None:
+    """Radison-inspired dark shell; map and chart widgets unchanged."""
+    st.markdown(
+        f'''
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+              rel="stylesheet">
+        <style>
+            :root {{
+                --accent: {ACCENT};
+                --accent-dim: {ACCENT_DIM};
+                --bg: #000000;
+                --surface: rgba(255, 255, 255, 0.04);
+                --border: rgba(255, 255, 255, 0.1);
+                --text-muted: #9ca3af;
+            }}
+
+            #MainMenu, footer, header {{ visibility: hidden; }}
+
+            .stApp {{
+                background: var(--bg);
+                font-family: 'Inter', system-ui, sans-serif;
+            }}
+
+            .stApp::before {{
+                content: '';
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 0;
+                background:
+                    radial-gradient(ellipse 80% 50% at 50% -10%,
+                        rgba(108, 92, 231, 0.22), transparent 55%),
+                    radial-gradient(ellipse 60% 40% at 80% 100%,
+                        rgba(108, 92, 231, 0.12), transparent 50%),
+                    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: auto, auto, 24px 24px;
+            }}
+
+            [data-testid="stAppViewContainer"] > section.main {{
+                position: relative;
+                z-index: 1;
+            }}
+
+            section[data-testid="stSidebar"] {{
+                background: linear-gradient(180deg, #0a0a0f 0%, #000 100%);
+                border-right: 1px solid var(--border);
+            }}
+
+            section[data-testid="stSidebar"] h1,
+            section[data-testid="stSidebar"] h2,
+            section[data-testid="stSidebar"] h3,
+            section[data-testid="stSidebar"] label,
+            section[data-testid="stSidebar"] p {{
+                color: #f3f4f6 !important;
+            }}
+
+            section[data-testid="stSidebar"] .stSlider label {{
+                color: var(--text-muted) !important;
+            }}
+
+            h1, h2, h3, p, label, span {{
+                font-family: 'Inter', system-ui, sans-serif;
+            }}
+
+            div[data-testid="stMetric"] {{
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 1.1rem 1.25rem;
+                backdrop-filter: blur(8px);
+            }}
+
+            div[data-testid="stMetric"]:first-of-type {{
+                border-color: rgba(108, 92, 231, 0.45);
+                box-shadow: 0 0 24px rgba(108, 92, 231, 0.12);
+            }}
+
+            div[data-testid="stMetricLabel"] {{
+                color: var(--text-muted) !important;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }}
+
+            div[data-testid="stMetricValue"] {{
+                color: #fff !important;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }}
+
+            .stButton > button {{
+                background: var(--accent) !important;
+                color: #fff !important;
+                border: none !important;
+                border-radius: 999px !important;
+                font-weight: 600 !important;
+                padding: 0.5rem 1.25rem !important;
+                transition: background 0.15s ease, transform 0.15s ease;
+            }}
+
+            .stButton > button:hover {{
+                background: var(--accent-dim) !important;
+                transform: translateY(-1px);
+            }}
+
+            div[data-testid="stRadio"] > div {{
+                gap: 0.5rem;
+            }}
+
+            div[data-testid="stRadio"] label {{
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                padding: 0.35rem 1rem;
+                color: #e5e7eb !important;
+            }}
+
+            div[data-testid="stRadio"] label[data-checked="true"],
+            div[data-testid="stRadio"] div[aria-checked="true"] label {{
+                background: var(--accent) !important;
+                border-color: var(--accent) !important;
+                color: #fff !important;
+            }}
+
+            .stSlider [data-baseweb="slider"] div {{
+                background: var(--accent) !important;
+            }}
+
+            hr {{
+                border-color: var(--border) !important;
+                margin: 1.5rem 0 !important;
+            }}
+
+            .radison-hero {{
+                text-align: center;
+                padding: 2rem 1rem 2.5rem;
+                margin-bottom: 0.5rem;
+            }}
+
+            .radison-badge {{
+                display: inline-block;
+                padding: 0.35rem 1rem;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid var(--border);
+                color: #d1d5db;
+                font-size: 0.8rem;
+                font-weight: 500;
+                margin-bottom: 1.25rem;
+            }}
+
+            .radison-hero h1 {{
+                color: #fff;
+                font-size: clamp(1.75rem, 4vw, 2.75rem);
+                font-weight: 700;
+                letter-spacing: -0.03em;
+                line-height: 1.15;
+                margin: 0 0 1rem;
+            }}
+
+            .radison-hero p {{
+                color: var(--text-muted);
+                font-size: 1.05rem;
+                max-width: 42rem;
+                margin: 0 auto;
+                line-height: 1.6;
+            }}
+
+            .radison-section {{
+                margin-bottom: 0.75rem;
+            }}
+
+            .radison-section .radison-badge {{
+                margin-bottom: 0.5rem;
+            }}
+
+            .radison-section-title {{
+                color: #fff !important;
+                font-size: 1.25rem !important;
+                font-weight: 600 !important;
+                margin: 0 !important;
+                letter-spacing: -0.02em;
+            }}
+
+            [data-testid="stAlert"] {{
+                border-radius: 12px;
+                border: 1px solid var(--border);
+            }}
+        </style>
+        ''',
+        unsafe_allow_html=True,
+    )
+
+
+def render_hero_header() -> None:
+    st.markdown(
+        '''
+        <div class="radison-hero">
+            <span class="radison-badge">OpenSky Network · ADS-B live feed</span>
+            <h1>Live global flight intelligence</h1>
+            <p>Real-time aircraft positions, velocities, and origin-country
+               breakdowns — refreshed every 15 minutes.</p>
+        </div>
+        ''',
+        unsafe_allow_html=True,
+    )
+
+
+def render_section_header(title: str, badge: str) -> None:
+    st.markdown(
+        f'''
+        <div class="radison-section">
+            <span class="radison-badge">{badge}</span>
+            <h2 class="radison-section-title">{title}</h2>
+        </div>
+        ''',
+        unsafe_allow_html=True,
+    )
+
+
+inject_radison_theme()
+
 # ── SDK client (one instance for the process lifetime) ────────────────────────
 
 @st.cache_resource
@@ -102,8 +329,7 @@ def load_top_countries() -> pd.DataFrame:
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 
-st.title('Live Global Flight Tracker')
-st.caption('Real-time ADS-B data from the OpenSky Network · refreshes every 15 minutes')
+render_hero_header()
 
 try:
     with st.spinner('Loading live flight data...'):
@@ -123,7 +349,11 @@ if df.empty:
 
 # ── Sidebar filters ───────────────────────────────────────────────────────────
 
-st.sidebar.header('Filters')
+st.sidebar.markdown(
+    '<p style="font-size:1.1rem;font-weight:600;color:#fff;margin:0 0 0.5rem;">'
+    'Filters</p>',
+    unsafe_allow_html=True,
+)
 
 all_countries = sorted(df['origin_country'].dropna().unique())
 selected_countries = st.sidebar.multiselect(
@@ -211,7 +441,7 @@ df_filtered['color'] = df_filtered['origin_country'].map(color_map_rgb).apply(
 )
 
 with map_col:
-    st.subheader('Aircraft Positions')
+    render_section_header('Aircraft Positions', 'Live map')
     view_mode = st.radio('View', ['2D Map', '3D Altitude'], index=1, horizontal=True)
 
     if view_mode == '3D Altitude':
@@ -254,7 +484,7 @@ with map_col:
     st.pydeck_chart(deck, use_container_width=True)
 
 with chart_col:
-    st.subheader('Top Countries')
+    render_section_header('Top Countries', 'Rankings')
     fig = px.bar(
         df_top,
         x='aircraft_count',
@@ -269,7 +499,9 @@ with chart_col:
         margin=dict(l=0, r=0, t=0, b=0),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font_color='white',
-        yaxis=dict(autorange='reversed'),
+        font=dict(family='Inter, system-ui, sans-serif', color='#e5e7eb'),
+        font_color='#e5e7eb',
+        yaxis=dict(autorange='reversed', gridcolor='rgba(255,255,255,0.06)'),
+        xaxis=dict(gridcolor='rgba(255,255,255,0.06)'),
     )
     st.plotly_chart(fig, use_container_width=True)

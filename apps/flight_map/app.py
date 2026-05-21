@@ -22,6 +22,7 @@ st.set_page_config(
 
 ACCENT = '#6C5CE7'
 ACCENT_DIM = '#5a4bc4'
+MAP_VIZ_HEIGHT = 520
 
 
 def inject_radison_theme() -> None:
@@ -149,8 +150,35 @@ def inject_radison_theme() -> None:
                 color: #fff !important;
             }}
 
-            .stSlider [data-baseweb="slider"] div {{
-                background: var(--accent) !important;
+            section[data-testid="stSidebar"] .stSlider [data-baseweb="slider"] {{
+                padding-top: 0.35rem;
+            }}
+
+            section[data-testid="stSidebar"] .stSlider [role="slider"] {{
+                background-color: var(--accent) !important;
+                border: 2px solid #ffffff !important;
+                box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45) !important;
+                width: 1.1rem !important;
+                height: 1.1rem !important;
+            }}
+
+            section[data-testid="stSidebar"] .stSlider [data-testid="stThumbValue"] {{
+                color: #e5e7eb !important;
+                font-size: 0.8rem;
+            }}
+
+            div[data-testid="stPydeckChart"],
+            div[data-testid="stPydeckChart"] > div,
+            div[data-testid="stPydeckChart"] iframe {{
+                height: {MAP_VIZ_HEIGHT}px !important;
+                min-height: {MAP_VIZ_HEIGHT}px !important;
+            }}
+
+            div[data-testid="stPlotlyChart"],
+            div[data-testid="stPlotlyChart"] > div,
+            div[data-testid="stPlotlyChart"] .js-plotly-plot {{
+                height: {MAP_VIZ_HEIGHT}px !important;
+                min-height: {MAP_VIZ_HEIGHT}px !important;
             }}
 
             hr {{
@@ -213,6 +241,11 @@ def inject_radison_theme() -> None:
                 border-radius: 12px;
                 border: 1px solid var(--border);
             }}
+
+            .chart-toolbar-spacer {{
+                height: 2.85rem;
+                margin-bottom: 0.5rem;
+            }}
         </style>
         ''',
         unsafe_allow_html=True,
@@ -224,7 +257,7 @@ def render_hero_header() -> None:
         '''
         <div class="radison-hero">
             <span class="radison-badge">OpenSky Network · ADS-B live feed</span>
-            <h1>Live global flight intelligence</h1>
+            <h1>Live Flight Tracker</h1>
             <p>Real-time aircraft positions, velocities, and origin-country
                breakdowns — refreshed every 15 minutes.</p>
         </div>
@@ -418,7 +451,7 @@ c4.metric('Avg Altitude', f"{df_filtered['altitude_ft'].mean():,.0f} ft")
 
 st.divider()
 
-# ── Layout: map + bar chart ───────────────────────────────────────────────────
+# ── Layout: map + bar chart (interleaved rows so panels align) ─────────────────
 
 map_col, chart_col = st.columns([3, 1])
 
@@ -442,8 +475,17 @@ df_filtered['color'] = df_filtered['origin_country'].map(color_map_rgb).apply(
 
 with map_col:
     render_section_header('Aircraft Positions', 'Live map')
+
+with chart_col:
+    render_section_header('Top Countries', 'Rankings')
+
+with map_col:
     view_mode = st.radio('View', ['2D Map', '3D Altitude'], index=1, horizontal=True)
 
+with chart_col:
+    st.markdown('<div class="chart-toolbar-spacer" aria-hidden="true"></div>', unsafe_allow_html=True)
+
+with map_col:
     if view_mode == '3D Altitude':
         df_filtered['altitude_m'] = (df_filtered['altitude_ft'].fillna(0) * 0.3048 * 30).round(0)
         layer = pdk.Layer(
@@ -481,10 +523,9 @@ with map_col:
             'style': {'backgroundColor': '#1a1a2e', 'color': 'white'},
         },
     )
-    st.pydeck_chart(deck, use_container_width=True)
+    st.pydeck_chart(deck, use_container_width=True, height=MAP_VIZ_HEIGHT)
 
 with chart_col:
-    render_section_header('Top Countries', 'Rankings')
     fig = px.bar(
         df_top,
         x='aircraft_count',
@@ -496,7 +537,8 @@ with chart_col:
     )
     fig.update_layout(
         showlegend=False,
-        margin=dict(l=0, r=0, t=0, b=0),
+        height=MAP_VIZ_HEIGHT,
+        margin=dict(l=0, r=8, t=0, b=0),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(family='Inter, system-ui, sans-serif', color='#e5e7eb'),
